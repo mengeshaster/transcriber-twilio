@@ -3,6 +3,7 @@
 from flask import Flask, request, abort
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
+from requests import head
 import pprint
 
 
@@ -53,6 +54,12 @@ def record():
 def record_complete():
     "Handle record completion"
     print(request.form)
+    if 'RecordingUrl' in request.form:
+        rsp = head(request.form['RecordingUrl'])
+        if rsp.status_code != 200:
+            print("Unable to fetch the recording")
+        else:
+            print("The recording is available")
     return request.form['RecordingSid']
 
 
