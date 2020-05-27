@@ -1,4 +1,5 @@
-@baseUrl = http://127.0.0.1:5000
+@baseUrl = {{$dotenv BASE_URL}}
+# To use local Flask, set to http://127.0.0.1:5000. See .env.example
 
 # Record - call started
 
@@ -7,7 +8,6 @@ Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 X-Twilio-Signature: rIuz7hiN/ypGygW10zArZ6wfIVQ=
 I-Twilio-Idempotency-Token: 9a4255c0-0c94-43d2-a91d-36c75d453aff
 Content-Length: 423
-Host: 5c5a89b6.ngrok.io
 Cache-Control: max-age=259200
 User-Agent: TwilioProxy/1.1
 connection: close
@@ -24,7 +24,6 @@ Referer: http://5c5a89b6.ngrok.io/record
 X-Twilio-Signature: HN3PgtyJjI4y8J6nkEu/16zsIUs=
 I-Twilio-Idempotency-Token: 95d5b1e0-0743-4684-b755-2b518e22ed4f
 Content-Length: 660
-Host: 5c5a89b6.ngrok.io
 Cache-Control: max-age=259200
 User-Agent: TwilioProxy/1.1
 connection: close
@@ -41,7 +40,6 @@ I-Twilio-Idempotency-Token: 298775bc-697b-4094-a6c5-f561b6ee0033
 X-Twilio-Signature: KSR4Q5/jMK67dCtqggVa+8dOK/I=
 Accept: */*
 Content-Length: 464
-Host: 5c5a89b6.ngrok.io
 Cache-Control: max-age=259200
 User-Agent: TwilioProxy/1.1
 connection: close
@@ -59,7 +57,6 @@ I-Twilio-Idempotency-Token: 6b0a6a40-43f1-4b3b-b11e-bc287ccfef90
 X-Twilio-Signature: 0mdEQjRvO0vU4oHzq6twXyXk9Gw=
 Accept: */*
 Content-Length: 1036
-Host: 5c5a89b6.ngrok.io
 Cache-Control: max-age=259200
 User-Agent: TwilioProxy/1.1
 connection: close
