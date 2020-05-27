@@ -1,0 +1,68 @@
+@baseUrl = http://127.0.0.1:5000
+
+# Record - call started
+
+POST {{baseUrl}}/record HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Twilio-Signature: rIuz7hiN/ypGygW10zArZ6wfIVQ=
+I-Twilio-Idempotency-Token: 9a4255c0-0c94-43d2-a91d-36c75d453aff
+Content-Length: 423
+Host: 5c5a89b6.ngrok.io
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-For: 54.89.206.195
+
+AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&ApiVersion=2010-04-01&CallSid=CA9624a5412363657826ca7dba23ca5524&CallStatus=ringing&Called=%2B12058581421&CalledCity=&CalledCountry=US&CalledState=AL&CalledZip=&Caller=%2B447539005477&CallerCity=&CallerCountry=GB&CallerState=&CallerZip=&Direction=inbound&From=%2B447539005477&FromCity=&FromCountry=GB&FromState=&FromZip=&To=%2B12058581421&ToCity=&ToCountry=US&ToState=AL&ToZip=
+
+####
+
+# Record - hangup
+POST {{baseUrl}}/record HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://5c5a89b6.ngrok.io/record
+X-Twilio-Signature: HN3PgtyJjI4y8J6nkEu/16zsIUs=
+I-Twilio-Idempotency-Token: 95d5b1e0-0743-4684-b755-2b518e22ed4f
+Content-Length: 660
+Host: 5c5a89b6.ngrok.io
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-For: 18.206.117.16
+
+AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&ApiVersion=2010-04-01&CallSid=CA9624a5412363657826ca7dba23ca5524&CallStatus=in-progress&Called=%2B12058581421&CalledCity=&CalledCountry=US&CalledState=AL&CalledZip=&Caller=%2B447539005477&CallerCity=&CallerCountry=GB&CallerState=&CallerZip=&Digits=%23&Direction=inbound&From=%2B447539005477&FromCity=&FromCountry=GB&FromState=&FromZip=&RecordingDuration=15&RecordingSid=RE106d897c6592793536b982f13127067b&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b&To=%2B12058581421&ToCity=&ToCountry=US&ToState=AL&ToZip=
+
+###
+
+# Record complete
+POST {{baseUrl}}/record_complete HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+I-Twilio-Idempotency-Token: 298775bc-697b-4094-a6c5-f561b6ee0033
+X-Twilio-Signature: KSR4Q5/jMK67dCtqggVa+8dOK/I=
+Accept: */*
+Content-Length: 464
+Host: 5c5a89b6.ngrok.io
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-For: 3.85.114.193
+
+RecordingSource=RecordVerb&RecordingSid=RE106d897c6592793536b982f13127067b&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b&RecordingStatus=completed&RecordingChannels=1&ErrorCode=0&CallSid=CA9624a5412363657826ca7dba23ca5524&RecordingStartTime=Tue%2C%2026%20May%202020%2023%3A56%3A16%20%2B0000&AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&RecordingDuration=12
+
+###
+
+# Transcription returned
+
+POST {{baseUrl}}/message HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+I-Twilio-Idempotency-Token: 6b0a6a40-43f1-4b3b-b11e-bc287ccfef90
+X-Twilio-Signature: 0mdEQjRvO0vU4oHzq6twXyXk9Gw=
+Accept: */*
+Content-Length: 1036
+Host: 5c5a89b6.ngrok.io
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-For: 184.72.136.46
+
+ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b%2FTranscriptions%2FTRec54e0d0c7d1842fdaef99354b714e5a&TranscriptionSid=TRec54e0d0c7d1842fdaef99354b714e5a&Called=%2B12058581421&RecordingSid=RE106d897c6592793536b982f13127067b&CallStatus=completed&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b&From=%2B447539005477&Direction=inbound&url=http%3A%2F%2F5c5a89b6.ngrok.io%2Fmessage&AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&TranscriptionText=And%20good%20evening%20would%20you%20kindly%20transcribe%20my%20message%20I%27m%20looking%20forward%20to%20hear%20what%20I%20have%20just%20said%20thank%20you%20very%20much%20and%20good%20night.&Caller=%2B447539005477&TranscriptionStatus=completed&CallSid=CA9624a5412363657826ca7dba23ca5524&To=%2B12058581421&ForwardedFrom=%2B12058581421
