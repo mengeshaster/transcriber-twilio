@@ -1,14 +1,22 @@
 # Derived from an example here: https://www.twilio.com/blog/transcribe-voicemails-python-flask-twilio
 
+import os
+
 from flask import Flask, request, abort
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from requests import head
+from smart_open import open as sopen
+from json import dump
+import boto3
 import pprint
 
 
 app = Flask(__name__)
 
+SLOT = 'dev'
+
+# Move to .env!!
 
 class LoggingMiddleware(object):
     def __init__(self, app):
@@ -41,47 +49,66 @@ def record():
             transcribe_callback="/message",
             transcribe=True)
 
-        #return status message
-        print(str(response))
+        sid = request.form['CallSid']
+        obj_name = f"s3://transcribe-twilio-{SLOT}-content/calls/{sid}.json"
+        capture_json(obj_name, request.form)
     else:
         # Hang up the call
         print("Hanging up...")
         response.hangup()
     return str(response)
 
-
 @app.route("/record_complete", methods=["POST"])
 def record_complete():
     "Handle record completion"
-    print(request.form)
+
+    sid = request.form['RecordingSid']
+    obj_name = f"s3://transcribe-twilio-{SLOT}-content/recordings/{sid}.json"
+    capture_json(obj_name, request.form)
+
     if 'RecordingUrl' in request.form:
         rsp = head(request.form['RecordingUrl'])
         if rsp.status_code != 200:
             print("Unable to fetch the recording")
         else:
             print("The recording is available")
+
     return request.form['RecordingSid']
 
 
+# FIXME: Rename this to reflect the intent
 @app.route("/message", methods=["POST"])
 def message():
     """ Creates a client object print the transcription text"""
     #create a client object and pass it our secure authentication variables
     client = Client()
-    print(request.form)
     if not 'TranscriptionSid' in request.form:
         abort(400, "No recordings received")
 
+    content = request.form
     sid = request.form['TranscriptionSid']
-    if 'TranscriptionText' in request.form:
-        print(request.form['TranscriptionText'])
-    else:
+    if 'TranscriptionText' not in request.form:
         #fetch the transcription and assign it
-        t = client.transcriptions(sid).fetch()
-        print(t.transcription_text)
+        content['TranscriptionText'] = client.transcriptions(sid).fetch()
 
-    print(sid)
+    sid = request.form['RecordingSid']
+    obj_name = f"s3://transcribe-twilio-{SLOT}-content/transcriptions/twilio/{sid}.json"
+    capture_json(obj_name, content)
     return str(sid)
+
+
+# TODO: Move the functions below into a persistence component
+
+
+def capture_json(obj_name: str, content: dict):
+    # TODO: Allow the session to be re-used
+    session = boto3.Session(
+        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY']
+    )
+    url = obj_name
+    with sopen(url, 'wt', transport_params={'session': session}) as fout:
+        dump(content, fout, indent=2)
 
 
 if __name__ == "__main__":
