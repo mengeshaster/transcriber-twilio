@@ -32,8 +32,8 @@ class LoggingMiddleware(object):
 
         return self._app(env, log_response)
 
-@app.route("/record", methods=["POST"])
-def record():
+@app.route("/call_incoming", methods=["POST"])
+def call_incoming():
     """ Returns TwiML which prompts the caller to record a message"""
     # Define TwiML response object
     response = VoiceResponse()
@@ -46,7 +46,7 @@ def record():
         # Use <Record> verb to record incoming message and set the transcribe argument to true
         response.record(
             recording_status_callback="/record_complete",
-            transcribe_callback="/message",
+            transcribe_callback="/twilio_transcription_complete",
             transcribe=True)
 
         sid = request.form['CallSid']
@@ -77,8 +77,8 @@ def record_complete():
 
 
 # FIXME: Rename this to reflect the intent
-@app.route("/message", methods=["POST"])
-def message():
+@app.route("/twilio_transcription_complete", methods=["POST"])
+def twilio_transcription_complete():
     """ Creates a client object print the transcription text"""
     #create a client object and pass it our secure authentication variables
     client = Client()

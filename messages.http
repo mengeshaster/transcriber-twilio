@@ -3,7 +3,7 @@
 
 # Record - call started
 
-POST {{baseUrl}}/record HTTP/1.1
+POST {{baseUrl}}/call_incoming HTTP/1.1
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 X-Twilio-Signature: rIuz7hiN/ypGygW10zArZ6wfIVQ=
 I-Twilio-Idempotency-Token: 9a4255c0-0c94-43d2-a91d-36c75d453aff
@@ -18,7 +18,7 @@ AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&ApiVersion=2010-04-01&CallSid=CA96
 ####
 
 # Record - hangup
-POST {{baseUrl}}/record HTTP/1.1
+POST {{baseUrl}}/call_incoming HTTP/1.1
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 Referer: http://5c5a89b6.ngrok.io/record
 X-Twilio-Signature: HN3PgtyJjI4y8J6nkEu/16zsIUs=
@@ -51,7 +51,7 @@ RecordingSource=RecordVerb&RecordingSid=RE106d897c6592793536b982f13127067b&Recor
 
 # Transcription returned
 
-POST {{baseUrl}}/message HTTP/1.1
+POST {{baseUrl}}/twilio_transcription_complete HTTP/1.1
 Content-Type: application/x-www-form-urlencoded; charset=utf-8
 I-Twilio-Idempotency-Token: 6b0a6a40-43f1-4b3b-b11e-bc287ccfef90
 X-Twilio-Signature: 0mdEQjRvO0vU4oHzq6twXyXk9Gw=
