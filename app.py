@@ -6,8 +6,8 @@ from flask import Flask, request, abort
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from requests import head
-from smart_open import open as sopen
-from json import dump
+from urllib.parse import urlparse
+from json import dumps
 import boto3
 import pprint
 
@@ -48,8 +48,7 @@ def call_incoming():
             transcribe=True)
 
         sid = request.form['CallSid']
-        obj_name = f"s3://transcribe-twilio-{SLOT}-content/calls/{sid}.json"
-        capture_json(obj_name, request.form)
+        capture_json(f"transcribe-twilio-{SLOT}-content", f"calls/{sid}.json", request.form)
     else:
         # Hang up the call
         print("Hanging up...")
@@ -61,8 +60,7 @@ def record_complete():
     "Handle record completion"
 
     sid = request.form['RecordingSid']
-    obj_name = f"s3://transcribe-twilio-{SLOT}-content/recordings/{sid}.json"
-    capture_json(obj_name, request.form)
+    capture_json(f"transcribe-twilio-{SLOT}-content", f"recordings/{sid}.json", request.form)
 
     if 'RecordingUrl' in request.form:
         rsp = head(request.form['RecordingUrl'])
@@ -89,8 +87,7 @@ def twilio_transcription_complete():
         content['TranscriptionText'] = _fetch_twilio_transcription(sid)
 
     sid = request.form['RecordingSid']
-    obj_name = f"s3://transcribe-twilio-{SLOT}-content/transcriptions/twilio/{sid}.json"
-    capture_json(obj_name, content)
+    capture_json(f"transcribe-twilio-{SLOT}-content", f"transcriptions/twilio/{sid}.json", content)
     return str(sid)
 
 
@@ -105,15 +102,10 @@ def _fetch_twilio_transcription(sid) -> str:
 # TODO: Move the functions below into a persistence component
 
 
-def capture_json(obj_name: str, content: dict):
-    # TODO: Allow the session to be re-used
-    session = boto3.Session(
-        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY']
-    )
-    url = obj_name
-    with sopen(url, 'wt', transport_params={'session': session}) as fout:
-        dump(content, fout, indent=2)
+def capture_json(bucket: str, path: str, content: dict):
+    content = dumps(content)
+    s3_obj = boto3.resource('s3').Object(bucket, path)
+    s3_obj.put(Body=content)
 
 
 if __name__ == "__main__":
