@@ -16,8 +16,6 @@ app = Flask(__name__)
 
 SLOT = 'dev'
 
-# Move to .env!!
-
 class LoggingMiddleware(object):
     def __init__(self, app):
         self._app = app
