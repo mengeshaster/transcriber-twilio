@@ -77,23 +77,30 @@ def record_complete():
 # FIXME: Rename this to reflect the intent
 @app.route("/twilio_transcription_complete", methods=["POST"])
 def twilio_transcription_complete():
-    """ Creates a client object print the transcription text"""
-    #create a client object and pass it our secure authentication variables
-    client = Client()
+    """Store the transcription received from Twilio. If non was given,
+    attempt to fetch it"""
+
     if not 'TranscriptionSid' in request.form:
         abort(400, "No recordings received")
 
-    content = request.form
-    sid = request.form['TranscriptionSid']
+    content = dict(**request.form)
+    sid = content['TranscriptionSid']
     if 'TranscriptionText' not in request.form:
-        #fetch the transcription and assign it
-        content['TranscriptionText'] = client.transcriptions(sid).fetch()
+        content['TranscriptionText'] = _fetch_twilio_transcription(sid)
 
     sid = request.form['RecordingSid']
     obj_name = f"s3://transcribe-twilio-{SLOT}-content/transcriptions/twilio/{sid}.json"
     capture_json(obj_name, content)
     return str(sid)
 
+
+def _fetch_twilio_transcription(sid) -> str:
+    # Note: the code below was never successfully tested.
+    # For now it's kept as for reference only
+    # At the very least it requires access to Twilio keys
+    client = Client()
+    #fetch the transcription and assign it
+    return client.transcriptions(sid).fetch()
 
 # TODO: Move the functions below into a persistence component
 
