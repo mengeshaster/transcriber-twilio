@@ -26,12 +26,24 @@ provider:
   region: eu-west-2
   iamRoleStatements:
     - Effect: "Allow"
-      Action:
-       - "*"
-      Resource:
-        Fn::GetAtt:
-          - recordingStorage
-          - Arn
+      Action: [
+                "s3:ListBucket",
+                "logs:CreateLogStream",
+                "s3:AbortMultipartUpload",
+                "s3:DeleteObject",
+                "s3:PutObject",
+                "s3:GetObject"
+            ]
+      Resource: [
+        Fn::GetAtt: [ "recordingStorage", "Arn" ],
+        Fn::Join: [
+          "/",
+          [
+            Fn::GetAtt: [ "recordingStorage", "Arn" ],
+            "*"
+          ]
+        ]
+      ]
 
 functions:
   app:
