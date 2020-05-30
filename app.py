@@ -5,7 +5,7 @@ import os
 from flask import Flask, request, abort
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
-from requests import head
+from requests import get
 from urllib.parse import urlparse
 from json import dumps
 import boto3
@@ -63,14 +63,9 @@ def record_complete():
     capture_json(f"transcribe-twilio-{SLOT}-content", f"recordings/{sid}.json", request.form)
 
     if 'RecordingUrl' in request.form:
-        rsp = head(request.form['RecordingUrl'])
-        if rsp.status_code != 200:
-            print("Unable to fetch the recording")
-        else:
-            print("The recording is available")
+        _save_twilio_recording_content(request.form)
 
     return request.form['RecordingSid']
-
 
 # FIXME: Rename this to reflect the intent
 @app.route("/twilio_transcription_complete", methods=["POST"])
@@ -90,6 +85,15 @@ def twilio_transcription_complete():
     capture_json(f"transcribe-twilio-{SLOT}-content", f"transcriptions/twilio/{sid}.json", content)
     return str(sid)
 
+def _save_twilio_recording_content(args: dict):
+    mp3_url = args['RecordingUrl'] + ".mp3"
+    content = get(mp3_url).content
+    s3_obj = boto3.resource('s3').Object(
+        f"transcribe-twilio-{SLOT}-content",
+        f"recordings/{args['RecordingSid']}.mp3"
+    )
+    s3_obj.put(Body=content)
+    return
 
 def _fetch_twilio_transcription(sid) -> str:
     # Note: the code below was never successfully tested.
@@ -103,9 +107,9 @@ def _fetch_twilio_transcription(sid) -> str:
 
 
 def capture_json(bucket: str, path: str, content: dict):
-    content = dumps(content)
+    content_str = dumps(content)
     s3_obj = boto3.resource('s3').Object(bucket, path)
-    s3_obj.put(Body=content)
+    s3_obj.put(Body=content_str)
 
 
 if __name__ == "__main__":
