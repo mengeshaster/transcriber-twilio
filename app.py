@@ -17,6 +17,8 @@ import pprint
 app = Flask(__name__)
 
 SLOT = 'dev'
+BUCKET = f"transcribe-twilio-{SLOT}-content"
+
 
 class LoggingMiddleware(object):
     def __init__(self, app):
@@ -50,7 +52,7 @@ def call_incoming():
             transcribe=True)
 
         sid = request.form['CallSid']
-        capture_json(f"transcribe-twilio-{SLOT}-content", f"calls/{sid}.json", request.form)
+        capture_json(BUCKET, f"calls/{sid}.json", request.form)
     else:
         # Hang up the call
         print("Hanging up...")
@@ -62,7 +64,7 @@ def record_complete():
     "Handle record completion"
 
     sid = request.form['RecordingSid']
-    capture_json(f"transcribe-twilio-{SLOT}-content", f"recordings/{sid}.json", request.form)
+    capture_json(BUCKET, f"recordings/{sid}.json", request.form)
 
     if 'RecordingUrl' in request.form:
         mp3_path = _save_twilio_recording_content(request.form)
@@ -83,7 +85,7 @@ def record_complete():
     }
 
     capture_json(
-        f"transcribe-twilio-{SLOT}-content",
+        BUCKET,
         _path_for_call_by_caller(call_details, request.form) + ".json",
         call_details)
     return sid
@@ -103,17 +105,14 @@ def twilio_transcription_complete():
         content['TranscriptionText'] = _fetch_twilio_transcription(sid)
 
     sid = request.form['RecordingSid']
-    capture_json(f"transcribe-twilio-{SLOT}-content", f"transcriptions/twilio/{sid}.json", content)
+    capture_json(BUCKET, f"transcriptions/twilio/{sid}.json", content)
     return str(sid)
 
 def _save_twilio_recording_content(args: dict) -> str:
     mp3_url = args['RecordingUrl'] + ".mp3"
     content = get(mp3_url).content
     mp3_path = f"recordings/{args['RecordingSid']}.mp3"
-    s3_obj = boto3.resource('s3').Object(
-        f"transcribe-twilio-{SLOT}-content",
-        mp3_path
-    )
+    s3_obj = boto3.resource('s3').Object(BUCKET, mp3_path)
     s3_obj.put(Body=content)
     return mp3_path
 
@@ -132,7 +131,7 @@ def _path_for_call_by_caller(call_details: Mapping[str, Any], form: Mapping[str,
 
 def _get_call_incoming_record(call_sid: str) -> Mapping[str, Any]:
     s3_obj = boto3.resource('s3').Object(
-        f"transcribe-twilio-{SLOT}-content", f"calls/{call_sid}.json")
+        BUCKET, f"calls/{call_sid}.json")
     js = load(s3_obj.get()['Body'])
     return js
 
