@@ -1,5 +1,6 @@
 Flask==1.1.2
 flask_accept==0.0.6
+flask-table==0.5.0
 twilio==6.40.0
 python-dotenv==v0.13.0
 requests==2.23.0

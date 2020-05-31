@@ -6,6 +6,7 @@ from datetime import datetime
 
 from flask import Flask, request, abort, jsonify
 from flask_accept import accept, accept_fallback
+from flask_table import Table, Col
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from requests import get
@@ -121,6 +122,28 @@ def calls(caller):
         caller=caller,
         calls=caller_calls
     )
+
+
+class CallRecords(Table):
+    Caller = Col("Caller")
+    RecordingStartTime = Col("Time started")
+    RecordingSid = Col("Recording SID")
+    CallSid = Col("Call SID")
+    TranscriptionTextTwilio = Col("Transcription (Twilio)")
+
+
+@app.route("/calls/<caller>", methods=["GET"])
+@calls.support("text/html")
+def calls_html(caller):
+    caller_calls = map(_augment_call_details, _iterate_calls_by_caller(caller))
+    table = CallRecords(caller_calls, border=True)
+    return f"""<html>
+<h1>Calls from +{caller}</h1>
+<div>
+{table.__html__()}
+</div>
+</html>
+"""
 
 
 def _save_twilio_recording_content(args: dict) -> str:
