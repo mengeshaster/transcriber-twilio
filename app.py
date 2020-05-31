@@ -3,6 +3,7 @@
 import os
 from typing import Mapping, Any, Generator
 from datetime import datetime
+from collections import defaultdict
 
 from flask import Flask, request, abort, jsonify, url_for
 from flask_accept import accept, accept_fallback
@@ -184,13 +185,14 @@ def _iterate_calls_by_caller(caller: str) -> Generator[Mapping[str, Any], None, 
 def _augment_call_details(call_details: Mapping[str, Any]) -> Mapping[str, Any]:
     sid = call_details["RecordingSid"]
     bucket = boto3.resource('s3').Bucket(BUCKET)
+    augmented_details = defaultdict(lambda: None, **call_details)
     try:
         transcription = load(bucket.Object(f"transcriptions/twilio/{sid}.json").get()['Body'])
-        call_details["TranscriptionTextTwilio"] = transcription["TranscriptionText"]
+        augmented_details["TranscriptionTextTwilio"] = transcription["TranscriptionText"]
     except botocore.exceptions.ClientError:
         pass
 
-    return call_details
+    return augmented_details
 
 
 def _fetch_twilio_transcription(sid) -> str:
