@@ -1,16 +1,18 @@
 # Derived from an example here: https://www.twilio.com/blog/transcribe-voicemails-python-flask-twilio
 
 import os
-from typing import Mapping, Any
+from typing import Mapping, Any, Generator
 from datetime import datetime
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
+from flask_accept import accept, accept_fallback
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from requests import get
 from urllib.parse import urlparse
 from json import dumps, load
 import boto3
+import botocore.exceptions
 import pprint
 
 
@@ -108,6 +110,19 @@ def twilio_transcription_complete():
     capture_json(BUCKET, f"transcriptions/twilio/{sid}.json", content)
     return str(sid)
 
+
+@app.route("/calls/<caller>", methods=["GET"])
+@accept_fallback
+def calls(caller):
+    # TODO: Provide sorting, paging
+    caller_calls = tuple(
+        map(_augment_call_details, _iterate_calls_by_caller(caller)))
+    return jsonify(
+        caller=caller,
+        calls=caller_calls
+    )
+
+
 def _save_twilio_recording_content(args: dict) -> str:
     mp3_url = args['RecordingUrl'] + ".mp3"
     content = get(mp3_url).content
@@ -134,6 +149,25 @@ def _get_call_incoming_record(call_sid: str) -> Mapping[str, Any]:
         BUCKET, f"calls/{call_sid}.json")
     js = load(s3_obj.get()['Body'])
     return js
+
+
+def _iterate_calls_by_caller(caller: str) -> Generator[Mapping[str, Any], None, None]:
+    bucket = boto3.resource('s3').Bucket(BUCKET)
+    for s3_obj in bucket.objects.filter(Prefix=f'by_caller/{caller}'):
+        js = load(s3_obj.get()['Body'])
+        yield js
+
+
+def _augment_call_details(call_details: Mapping[str, Any]) -> Mapping[str, Any]:
+    sid = call_details["RecordingSid"]
+    bucket = boto3.resource('s3').Bucket(BUCKET)
+    try:
+        transcription = load(bucket.Object(f"transcriptions/twilio/{sid}.json").get()['Body'])
+        call_details["TranscriptionTextTwilio"] = transcription["TranscriptionText"]
+    except botocore.exceptions.ClientError:
+        pass
+
+    return call_details
 
 
 def _fetch_twilio_transcription(sid) -> str:

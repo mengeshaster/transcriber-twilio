@@ -63,3 +63,10 @@ connection: close
 X-Forwarded-For: 184.72.136.46
 
 ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b%2FTranscriptions%2FTRec54e0d0c7d1842fdaef99354b714e5a&TranscriptionSid=TRec54e0d0c7d1842fdaef99354b714e5a&Called=%2B12058581421&RecordingSid=RE106d897c6592793536b982f13127067b&CallStatus=completed&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE106d897c6592793536b982f13127067b&From=%2B447539005477&Direction=inbound&url=http%3A%2F%2F5c5a89b6.ngrok.io%2Fmessage&AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&TranscriptionText=And%20good%20evening%20would%20you%20kindly%20transcribe%20my%20message%20I%27m%20looking%20forward%20to%20hear%20what%20I%20have%20just%20said%20thank%20you%20very%20much%20and%20good%20night.&Caller=%2B447539005477&TranscriptionStatus=completed&CallSid=CA9624a5412363657826ca7dba23ca5524&To=%2B12058581421&ForwardedFrom=%2B12058581421
+
+###
+
+# Retrieve calls for a number that exists in the system
+
+GET {{baseUrl}}/calls/447539005477 HTTP/1.1
+Accept: application/json
