@@ -83,7 +83,10 @@ def record_complete():
     call_details = {
         "Caller": _get_canonical_number(call_record) or None,
         "RecordingStartTime": request.form["RecordingStartTime"],
+        # MP3 file path on our private storage
         "Mp3Path": mp3_path,
+        # MP3 file URL on Twilio's servers
+        "Mp3PathTwilio": request.form['RecordingUrl'] + ".mp3",
         "RecordingSid": sid,
         "CallSid": call_sid,
     }
@@ -130,6 +133,7 @@ class CallRecords(Table):
     RecordingStartTime = Col("Time started")
     RecordingSid = Col("Recording SID")
     CallSid = Col("Call SID")
+    Mp3PathTwilio = Col("MP3 Link")
     TranscriptionTextTwilio = Col("Transcription (Twilio)")
 
 
