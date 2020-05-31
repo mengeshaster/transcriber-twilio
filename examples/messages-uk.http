@@ -1,0 +1,84 @@
+@baseUrl = {{$dotenv BASE_URL}}
+# To use local Flask, set to http://127.0.0.1:5000. See .env.example
+
+# Record - call started
+
+POST {{baseUrl}}/call_incoming HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Twilio-Signature: bCnDU+pWKytRSLwRi4GxBoUxxkM=
+I-Twilio-Idempotency-Token: 662de891-3de4-43f4-ab36-cc910d38a63e
+Content-Length: 439
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-Proto: https
+X-Forwarded-For: 34.229.135.139
+
+AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&ApiVersion=2010-04-01&CallSid=CAdad52ff6ac1ac19c23614afb18684a5a&CallStatus=ringing&Called=%2B441344596277&CalledCity=&CalledCountry=GB&CalledState=Bracknell&CalledZip=&Caller=%2B447415521933&CallerCity=&CallerCountry=GB&CallerState=&CallerZip=&Direction=inbound&From=%2B447415521933&FromCity=&FromCountry=GB&FromState=&FromZip=&To=%2B441344596277&ToCity=&ToCountry=GB&ToState=Bracknell&ToZip=
+
+####
+
+# Record - hangup
+POST {{baseUrl}}/call_incoming HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Twilio-Signature: q3juj4Yy0m12bfNN0ovZz+UYPgM=
+I-Twilio-Idempotency-Token: 0363306f-b399-45f6-af75-fe829bae00c2
+Content-Length: 674
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-Proto: https
+X-Forwarded-For: 3.93.11.151
+
+AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&ApiVersion=2010-04-01&CallSid=CAdad52ff6ac1ac19c23614afb18684a5a&CallStatus=in-progress&Called=%2B441344596277&CalledCity=&CalledCountry=GB&CalledState=Bracknell&CalledZip=&Caller=%2B447415521933&CallerCity=&CallerCountry=GB&CallerState=&CallerZip=&Digits=6&Direction=inbound&From=%2B447415521933&FromCity=&FromCountry=GB&FromState=&FromZip=&RecordingDuration=10&RecordingSid=RE58d18da9bec6c1d540c5f1b8ccbb85a6&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE58d18da9bec6c1d540c5f1b8ccbb85a6&To=%2B441344596277&ToCity=&ToCountry=GB&ToState=Bracknell&ToZip=
+
+###
+
+# Record complete
+POST {{baseUrl}}/record_complete HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+I-Twilio-Idempotency-Token: 3e3df4d7-41a7-4dcb-8dd9-0020037659b5
+X-Twilio-Signature: lgQcwdV3YwHy8frmjnb7KesIaEA=
+Accept: */*
+Content-Length: 463
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-Proto: https
+X-Forwarded-For: 54.226.200.102
+
+RecordingSource=RecordVerb&RecordingSid=RE58d18da9bec6c1d540c5f1b8ccbb85a6&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE58d18da9bec6c1d540c5f1b8ccbb85a6&RecordingStatus=completed&RecordingChannels=1&ErrorCode=0&CallSid=CAdad52ff6ac1ac19c23614afb18684a5a&RecordingStartTime=Sun%2C%2031%20May%202020%2009%3A11%3A54%20%2B0000&AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&RecordingDuration=8
+
+###
+
+# Transcription returned
+
+POST {{baseUrl}}/twilio_transcription_complete HTTP/1.1
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+I-Twilio-Idempotency-Token: 4b9f0b6f-e3b9-4092-8f9e-180486a7b441
+X-Twilio-Signature: /6OGvl1OmrkETp3148UXy9psm9A=
+Accept: */*
+Content-Length: 1030
+Cache-Control: max-age=259200
+User-Agent: TwilioProxy/1.1
+connection: close
+X-Forwarded-Proto: https
+X-Forwarded-For: 18.207.203.239
+
+ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE58d18da9bec6c1d540c5f1b8ccbb85a6%2FTranscriptions%2FTR2837968a5be00d9c34311538517f5088&TranscriptionSid=TR2837968a5be00d9c34311538517f5088&Called=%2B441344596277&RecordingSid=RE58d18da9bec6c1d540c5f1b8ccbb85a6&CallStatus=completed&RecordingUrl=https%3A%2F%2Fapi.twilio.com%2F2010-04-01%2FAccounts%2FACa3c76e5130ba126ccd5e528bcc75afe6%2FRecordings%2FRE58d18da9bec6c1d540c5f1b8ccbb85a6&From=%2B447415521933&Direction=inbound&url=https%3A%2F%2Fd137ba04e43a.eu.ngrok.io%2Ftwilio_transcription_complete&AccountSid=ACa3c76e5130ba126ccd5e528bcc75afe6&TranscriptionText=Would%20you%20kindly%20transcribe%20this%20message%20I%20would%20like%20to%20examine%20how%20the%20transcriptions%20and%20out%20thank%20you%20very%20much.&Caller=%2B447415521933&TranscriptionStatus=completed&CallSid=CAdad52ff6ac1ac19c23614afb18684a5a&To=%2B441344596277&ForwardedFrom=%2B441344596277
+
+###
+
+# To use teh examples below, be sure to set teh .env variable CALLER_TO_SEARCH_UK
+
+# Retrieve calls for a number that exists in the system as JSON
+
+GET {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_UK}} HTTP/1.1
+Accept: application/json
+
+###
+
+# Retrieve calls for a number that exists in the system as HTML
+
+GET {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_UK}} HTTP/1.1
+Accept: text/html

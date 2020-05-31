@@ -66,14 +66,16 @@ ApiVersion=2010-04-01&TranscriptionType=fast&TranscriptionUrl=https%3A%2F%2Fapi.
 
 ###
 
+# To use teh examples below, be sure to set teh .env variable CALLER_TO_SEARCH_US
+
 # Retrieve calls for a number that exists in the system as JSON
 
-GET {{baseUrl}}/calls/447539005477 HTTP/1.1
+GET {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_US}} HTTP/1.1
 Accept: application/json
 
 ###
 
 # Retrieve calls for a number that exists in the system as HTML
 
-GET {{baseUrl}}/calls/447539005477 HTTP/1.1
+GET {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_US}} HTTP/1.1
 Accept: text/html
