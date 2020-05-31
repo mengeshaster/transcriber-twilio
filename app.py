@@ -4,7 +4,7 @@ import os
 from typing import Mapping, Any, Generator
 from datetime import datetime
 
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, url_for
 from flask_accept import accept, accept_fallback
 from flask_table import Table, Col
 from twilio.twiml.voice_response import VoiceResponse
@@ -50,8 +50,8 @@ def call_incoming():
 
         # Use <Record> verb to record incoming message and set the transcribe argument to true
         response.record(
-            recording_status_callback="/record_complete",
-            transcribe_callback="/twilio_transcription_complete",
+            recording_status_callback=url_for(".record_complete"),
+            transcribe_callback=url_for(".twilio_transcription_complete"),
             transcribe=True)
 
         sid = request.form['CallSid']
