@@ -1,3 +1,4 @@
+# FIXME: This should come from environment
 service: transcribe-twilio
 
 plugins:
@@ -16,13 +17,18 @@ resources: # CloudFormation template syntax
     recordingStorage:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: transcribe-twilio-dev-content
+        BucketName: ${self:service}-${self:provider.stage}-content
+    awsTranscriptionStorage:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:provider.stage}-aws-transcriptions
         # AccessControl: PublicReadWrite
 
 provider:
   name: aws
   runtime: python3.8
-  stage: dev
+  stage: ${opt:stage, 'dev'}
+  # FIXME: Don't hard-code the region
   region: eu-west-2
   iamRoleStatements:
     - Effect: "Allow"
@@ -42,8 +48,21 @@ provider:
             Fn::GetAtt: [ "recordingStorage", "Arn" ],
             "*"
           ]
+        ],
+        Fn::GetAtt: [ "awsTranscriptionStorage", "Arn" ],
+        Fn::Join: [
+          "/",
+          [
+            Fn::GetAtt: [ "awsTranscriptionStorage", "Arn" ],
+            "*"
+          ]
         ]
       ]
+    - Effect: "Allow"
+      Action: [
+                "transcribe:*"
+              ]
+      Resource: "*"
 
 functions:
   app:
