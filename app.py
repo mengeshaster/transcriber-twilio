@@ -5,23 +5,21 @@ from typing import Mapping, Any, Generator
 from datetime import datetime
 from collections import defaultdict
 
-from flask import Flask, request, abort, jsonify, url_for
+from flask import Flask, request, abort, url_for
 from flask_accept import accept, accept_fallback
-from flask_table import Table, Col
+
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 from requests import get
-from urllib.parse import urlparse
 from json import dumps, load
 import boto3
-import botocore.exceptions
 import pprint
 
+from settings import BUCKET
+from aws_transcribe import transcribe_recording
+import call_listing
 
 app = Flask(__name__)
-
-SLOT = 'dev'
-BUCKET = f"transcribe-twilio-{SLOT}-content"
 
 
 class LoggingMiddleware(object):
@@ -116,39 +114,14 @@ def twilio_transcription_complete():
     return str(sid)
 
 
-@app.route("/calls/<caller>", methods=["GET"])
-@accept_fallback
-def calls(caller):
-    # TODO: Provide sorting, paging
-    caller_calls = tuple(
-        map(_augment_call_details, _iterate_calls_by_caller(caller)))
-    return jsonify(
-        caller=caller,
-        calls=caller_calls
-    )
+calls = app.route("/calls/<caller>", methods=["GET"])(
+    accept_fallback(call_listing.calls))
+"Default route for information on calls. Returns JSON"
 
-
-class CallRecords(Table):
-    Caller = Col("Caller")
-    RecordingStartTime = Col("Time started")
-    RecordingSid = Col("Recording SID")
-    CallSid = Col("Call SID")
-    Mp3PathTwilio = Col("MP3 Link")
-    TranscriptionTextTwilio = Col("Transcription (Twilio)")
-
-
-@app.route("/calls/<caller>", methods=["GET"])
-@calls.support("text/html")
-def calls_html(caller):
-    caller_calls = map(_augment_call_details, _iterate_calls_by_caller(caller))
-    table = CallRecords(caller_calls, border=True)
-    return f"""<html>
-<h1>Calls from +{caller}</h1>
-<div>
-{table.__html__()}
-</div>
-</html>
-"""
+calls_html = app.route("/calls/<caller>", methods=["GET"])(
+    calls.support("text/html")(
+        call_listing.calls_html))
+"Route for information on calls, which Returns an HTML table"
 
 
 def _save_twilio_recording_content(args: dict) -> str:
@@ -178,25 +151,6 @@ def _get_call_incoming_record(call_sid: str) -> Mapping[str, Any]:
     js = load(s3_obj.get()['Body'])
     return js
 
-
-def _iterate_calls_by_caller(caller: str) -> Generator[Mapping[str, Any], None, None]:
-    bucket = boto3.resource('s3').Bucket(BUCKET)
-    for s3_obj in bucket.objects.filter(Prefix=f'by_caller/{caller}'):
-        js = load(s3_obj.get()['Body'])
-        yield js
-
-
-def _augment_call_details(call_details: Mapping[str, Any]) -> Mapping[str, Any]:
-    sid = call_details["RecordingSid"]
-    bucket = boto3.resource('s3').Bucket(BUCKET)
-    augmented_details = defaultdict(lambda: None, **call_details)
-    try:
-        transcription = load(bucket.Object(f"transcriptions/twilio/{sid}.json").get()['Body'])
-        augmented_details["TranscriptionTextTwilio"] = transcription["TranscriptionText"]
-    except botocore.exceptions.ClientError:
-        pass
-
-    return augmented_details
 
 
 def _fetch_twilio_transcription(sid) -> str:
