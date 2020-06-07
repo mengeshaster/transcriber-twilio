@@ -93,6 +93,11 @@ def record_complete():
         BUCKET,
         _path_for_call_by_caller(call_details, request.form) + ".json",
         call_details)
+
+    if mp3_path is not None:
+        mp3_url = f"s3://{BUCKET}/{mp3_path}"
+        transcribe_recording(mp3_url)
+
     return sid
 
 
