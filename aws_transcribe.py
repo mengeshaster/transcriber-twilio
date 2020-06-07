@@ -1,6 +1,8 @@
 import logging
+from typing import Optional
 from urllib.parse import urlparse
 from os.path import basename, splitext
+from json import load
 
 import boto3
 import botocore
@@ -40,3 +42,26 @@ def transcribe_recording(
         logging.exception("Failed to submit the transcription")
 
     return
+
+def get_transcription_content(recording_id: str) -> Optional[str]:
+    s3 = boto3.resource('s3')
+    recording = s3.Object(AWS_TRANSCRIBE_RESULTS_BUCKET, recording_id + ".json")
+    try:
+        js = load(recording.get()["Body"])
+    except botocore.exceptions.ClientError:
+        logger.info("No transcription for %s", recording_id)
+        return None
+
+    transcripts = js["results"]["transcripts"]
+    if not transcripts:
+        logger.warning(
+            "Transcription result for recording %s contains no transcripts",
+            recording_id)
+    else:
+        if len(transcripts) > 1:
+            logger.warning(
+                "Transcription result for recording %s contains %d transcripts. Only considerting the first",
+                recording_id, len(transcripts))
+        return transcripts[0]["transcript"]
+
+    return None

@@ -10,6 +10,7 @@ from flask import jsonify
 from flask_table import Table, Col
 
 from settings import BUCKET, AWS_TRANSCRIBE_RESULTS_BUCKET
+from aws_transcribe import get_transcription_content as get_aws_transcription_content
 
 def calls(caller):
     # TODO: Provide sorting, paging
@@ -28,6 +29,7 @@ class CallRecords(Table):
     CallSid = Col("Call SID")
     Mp3PathTwilio = Col("MP3 Link")
     TranscriptionTextTwilio = Col("Transcription (Twilio)")
+    TranscriptionTextAws = Col("Transcription (AWS)")
 
 
 def calls_html(caller):
@@ -59,4 +61,5 @@ def _augment_call_details(call_details: Mapping[str, Any]) -> Mapping[str, Any]:
     except botocore.exceptions.ClientError:
         pass
 
+    augmented_details["TranscriptionTextAws"] = get_aws_transcription_content(sid)
     return augmented_details
