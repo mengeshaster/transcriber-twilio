@@ -1,5 +1,9 @@
-# FIXME: This should come from environment
-service: transcribe-twilio
+# To install, invoke giving a service name. e.g.:
+# sls deploy --service=my-transcriber
+# Note, that the combination of service name and stage is used
+# to generate the names of S3 buckets which the deployment uses,
+# which have to be globally unique.
+service: ${opt:service}
 
 plugins:
   - serverless-python-requirements
@@ -29,7 +33,7 @@ provider:
   runtime: python3.8
   stage: ${opt:stage, 'dev'}
   # FIXME: Don't hard-code the region
-  region: eu-west-2
+  region: ${opt:region, 'eu-west-2'}
   iamRoleStatements:
     - Effect: "Allow"
       Action: [
@@ -70,4 +74,6 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-
+    environment:
+      APP_NAME: ${self:service}
+      SLOT: ${self:provider.stage}
