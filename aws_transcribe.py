@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def transcribe_recording(
     audio_url: str,
-    language_code="en-US"
+    language_code="he-IL"
 ) -> None:
     audio_path = urlparse(audio_url).path
     recording_id, extension = splitext(basename(audio_path))
