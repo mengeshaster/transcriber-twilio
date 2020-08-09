@@ -31,6 +31,7 @@ resources: # CloudFormation template syntax
 provider:
   name: aws
   runtime: python3.8
+  memorySize: 512
   stage: ${opt:stage, 'dev'}
   # FIXME: Don't hard-code the region
   region: ${opt:region, 'eu-west-2'}
