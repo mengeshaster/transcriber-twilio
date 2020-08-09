@@ -82,3 +82,10 @@ Accept: application/json
 
 GET {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_UK}} HTTP/1.1
 Accept: text/html
+
+###
+
+# Simulate CORS preflight request
+OPTIONS {{baseUrl}}/calls/{{$dotenv CALLER_TO_SEARCH_UK}} HTTP/1.1
+
+###

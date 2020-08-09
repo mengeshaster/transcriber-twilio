@@ -73,7 +73,16 @@ functions:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
+        method: get
+        cors: true
       - http: 'ANY {proxy+}'
+        method: get
+        cors: true
+      - http: ANY /
+        method: post
+      - http: 'ANY {proxy+}'
+        method: post
+
     environment:
       APP_NAME: ${self:service}
       SLOT: ${self:provider.stage}
