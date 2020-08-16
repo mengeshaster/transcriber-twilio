@@ -50,8 +50,7 @@ def call_incoming():
         # Use <Record> verb to record incoming message and set the transcribe argument to true
         response.record(
             recording_status_callback=url_for(".record_complete"),
-            transcribe_callback=url_for(".twilio_transcription_complete"),
-            transcribe=True)
+        )
 
         sid = request.form['CallSid']
         capture_json(BUCKET, f"calls/{sid}.json", request.form)

@@ -28,7 +28,6 @@ class CallRecords(Table):
     RecordingSid = Col("Recording SID")
     CallSid = Col("Call SID")
     Mp3PathTwilio = Col("MP3 Link")
-    TranscriptionTextTwilio = Col("Transcription (Twilio)")
     TranscriptionTextAws = Col("Transcription (AWS)")
 
 
